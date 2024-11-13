@@ -3,20 +3,16 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import DroneParameters from './DroneParameters';
 import ControlPoints from './ControlPoints';
-// import Visualization from './Visualization';
 import MapView from './MapView';
 import SimulationPage from './SimulationPage';
 import './App.css';
 
 function App() {
-
-
   const fileInputRef = useRef(null);
 
   const handleFileButtonClick = () => {
     fileInputRef.current.click();
   };
-
 
   const [droneData, setDroneData] = useState({ altitude: 0 });
   const [controlPoints, setControlPoints] = useState([]);
@@ -42,7 +38,6 @@ function App() {
     setControlPoints(controlPoints.filter((_, idx) => idx !== index));
   };
 
-  // Функция для загрузки и парсинга CSV файла
   const loadPointsFromFile = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -60,34 +55,25 @@ function App() {
     });
   };
 
-  // Функция для экспорта точек в CSV файл
   const exportPointsToCSV = () => {
     const pointsToExport = controlPoints.map(point => ({
       lat: point.position[0],
       lon: point.position[1],
       alt: point.altitude
     }));
-  
+
     const csv = Papa.unparse(pointsToExport, {
       delimiter: ";",
-      header: false // This will prevent the header row from being added
+      header: false
     });
-  
-    // Create and download the file
+
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", "control_points.csv");
-      link.click();
-    }
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "control_points.csv");
+    link.click();
   };
-  
-
-
-
-  
 
   return (
     <Router>
@@ -105,24 +91,19 @@ function App() {
               <div className="container">
                 <div className="left-panel">
                   <DroneParameters onSubmit={setDroneData} />
-                  
                   <div className="file-upload">
-      <button onClick={handleFileButtonClick}>
-        Загрузить точки из CSV
-      </button>
-
-      <input
-        id="file-upload"
-        type="file"
-        accept=".csv"
-        ref={fileInputRef}
-        onChange={loadPointsFromFile}
-        style={{ display: "none" }}
-      />
-    </div>
+                    <button onClick={handleFileButtonClick}>Импортировать точки из CSV</button>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".csv"
+                      ref={fileInputRef}
+                      onChange={loadPointsFromFile}
+                      style={{ display: "none" }}
+                    />
+                  </div>
                   <button onClick={exportPointsToCSV}>Экспортировать точки в CSV</button>
                 </div>
-
                 <div className="map-container">
                   <MapView
                     points={controlPoints}
@@ -131,15 +112,11 @@ function App() {
                     onRemovePoint={removeControlPoint}
                   />
                 </div>
-
                 <div className="right-panel">
-                  {/* <Visualization /> */}
                   <ControlPoints
                     points={controlPoints}
                     onAltitudeChange={updateControlPointAltitude}
                   />
-
-
                 </div>
               </div>
             }
