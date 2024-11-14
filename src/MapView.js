@@ -27,11 +27,17 @@ function MapView({ points, onAddPoint, onUpdatePoint, onRemovePoint }) {
   };
 
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
-      <MapContainer center={[55.7558, 37.6173]} zoom={13} style={{ height: '100%', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
+      <MapContainer
+       center={[55.7558, 37.6173]}
+        zoom={13}
+         style={{ height: '100%', width: '100%' }}
+         attributionControl={false}
+         >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
+          
         />
         <AddPointOnClick />
 

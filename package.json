@@ -9,6 +9,7 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "babylonjs": "^7.33.0",
+    "bootstrap": "^5.3.3",
     "leaflet": "^1.9.4",
     "leaflet-rotatedmarker": "^0.2.0",
     "papaparse": "^5.4.1",

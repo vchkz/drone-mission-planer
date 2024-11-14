@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Papa from 'papaparse';
 import DroneParameters from './DroneParameters';
 import ControlPoints from './ControlPoints';
 import MapView from './MapView';
 import SimulationPage from './SimulationPage';
 import './App.css';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const fileInputRef = useRef(null);
@@ -14,7 +16,7 @@ function App() {
     fileInputRef.current.click();
   };
 
-  const [droneData, setDroneData] = useState({ altitude: 0 });
+  const [droneData, setDroneData] = useState({ altitude: 100 });
   const [controlPoints, setControlPoints] = useState([]);
 
   const addControlPoint = (newPoint) => {
@@ -77,54 +79,58 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <h1>Планировщик полётных миссий БВС</h1>
-        <nav>
-          <Link to="/">Главная</Link>
-          <Link to="/simulation">Симуляция</Link>
+      <div className="App vh-100 d-flex flex-column">
+        <nav className="navbar navbar-dark bg-dark p-3">
+          <div className='container-fluid'>
+            <h3 className="text-light">Планировщик полётных миссий БВС</h3>
+            <NavigationButton />
+          </div>
         </nav>
 
         <Routes>
           <Route
             path="/"
             element={
-              <div className="container">
-                <div className="left-panel">
-                  <DroneParameters onSubmit={setDroneData} />
-                  <div className="file-upload">
-                    <button onClick={handleFileButtonClick}>Импортировать точки из CSV</button>
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept=".csv"
-                      ref={fileInputRef}
-                      onChange={loadPointsFromFile}
-                      style={{ display: "none" }}
-                    />
+              <div className="container-fluid flex-grow-1 d-flex">
+                <div className="row flex-grow-1">
+                  <div className="col-md-3 bg-light p-3">
+                    <DroneParameters onSubmit={setDroneData} />
+                    <div className='p-3 rounded shadow-sm'>
+                      <button onClick={handleFileButtonClick} className="btn btn-secondary btn-block mt-2 w-100">Импортировать точки из CSV</button>
+                      <input id="file-upload" type="file" accept=".csv" ref={fileInputRef} onChange={loadPointsFromFile} style={{ display: "none" }} />
+                      <button onClick={exportPointsToCSV} className="btn btn-secondary btn-block mt-2 w-100">Экспортировать точки в CSV</button>
+                    </div>
                   </div>
-                  <button onClick={exportPointsToCSV}>Экспортировать точки в CSV</button>
-                </div>
-                <div className="map-container">
-                  <MapView
-                    points={controlPoints}
-                    onAddPoint={addControlPoint}
-                    onUpdatePoint={updateControlPoint}
-                    onRemovePoint={removeControlPoint}
-                  />
-                </div>
-                <div className="right-panel">
-                  <ControlPoints
-                    points={controlPoints}
-                    onAltitudeChange={updateControlPointAltitude}
-                  />
+                  <div className="col-md-6 flex-grow-1">
+                    <MapView points={controlPoints} onAddPoint={addControlPoint} onUpdatePoint={updateControlPoint} onRemovePoint={removeControlPoint} />
+                  </div>
+                  <div className="col-md-3 bg-light p-3 control-points-container">
+                    <ControlPoints points={controlPoints} onAltitudeChange={updateControlPointAltitude} />
+                  </div>
                 </div>
               </div>
             }
           />
-          <Route path="/simulation" element={<SimulationPage />} />
+          <Route path="/simulation" element={<SimulationPage controlPoints={controlPoints} droneData={droneData} />} />
         </Routes>
       </div>
     </Router>
+  );
+}
+
+function NavigationButton() {
+  const location = useLocation();
+
+  return (
+    <div className="d-flex align-items-center">
+      <span className="mx-2" style={{ borderLeft: "1px solid gray", height: "24px" }}></span>
+      {location.pathname === "/simulation" ? (
+        <Link to="/" className="btn btn-outline-light mx-2">На главную</Link>
+      ) : (
+        <Link to="/simulation" className="btn btn-primary mx-2">Симуляция</Link>
+      )}
+      
+    </div>
   );
 }
 
